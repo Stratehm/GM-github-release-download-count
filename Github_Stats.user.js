@@ -36,6 +36,9 @@ function getDownloadCount(userProjectUserPart) {
 	var url = "https://api.github.com/repos/" + userProjectUserPart + "/releases";
 	GM_xmlhttpRequest({
 	  method: "GET",
+	  headers: {
+		"Cache-Control": "no-cache"
+	  },
 	  url: url,
 	  onload: parseDownloadStatsReponse
 	});
