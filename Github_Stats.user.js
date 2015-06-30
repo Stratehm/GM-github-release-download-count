@@ -23,18 +23,18 @@ function init() {
 	}).append('<b>Last release: </b>');
 	$('h1.entry-title.public').append(lastReleaseItemList);
 	var userProject = getCurrentUserProjectUrlPart();
-	if(userProject != null) {
+	if(userProject !== null) {
 		getDownloadCount(userProject);
 	}
-	if(window.location.pathname.indexOf("/settings/tokens") != 0) {
-		return
+	if(window.location.pathname.indexOf("/settings/tokens") !== 0) {
+		return;
 	}
 	$('.column.three-fourths').append('<div class="boxed-group access-token-group" id="GM_Form"><h3>Set personal access token for userscript</h3><div class="boxed-group-inner"><p>This token will be used by the userscript to show the number of downloads for a repo.</p><ul class="boxed-group-list"><li style="line-height:32px;"><p>Login Username: <input type="text" id="clientId" style="float:right;width:480px;" /></p><p style="line-height:32px;">Client Secret: <input type="password" id="clientSecret" style="float:right;width:480px;"/></p></li><li><button id="GM_submit" type="submit" type="button" class="btn btn-primary">Generate token</button>&nbsp;&nbsp;<button id="GM_reset" type="submit" type="button" class="btn btn-danger">Clear token</button></li></ul><p class="help"><i class="octicon octicon-question"></i>Without a personal access token, you are rate limited to <a href="https://developer.github.com/v3/#rate-limiting">60 api calls per hour</a>, which may not be enough.</p></div></div>');
 	$('#clientId').val(GM_SuperValue.get('clientId',''));
 	$('#clientSecret').val(GM_SuperValue.get('clientSecret',''));
 	$('#GM_submit').click(function(){
-		GM_SuperValue.set("clientId",$('#clientId').val())
-		GM_SuperValue.set("clientSecret",$('#clientSecret').val())
+		GM_SuperValue.set("clientId",$('#clientId').val());
+		GM_SuperValue.set("clientSecret",$('#clientSecret').val());
 		console.log({clientId:GM_SuperValue.get("clientId",""),clientSecret:GM_SuperValue.get("clientSecret","")});
 		$('#GM_submit').fadeTo(1000,0.01).fadeTo(1000,1);
 	});
@@ -73,14 +73,14 @@ function parseDownloadStatsReponse(response) {
 	var data = $.parseJSON(response.responseText);
 	if(data.message && data.message.indexOf("API rate limit exceeded") >-1) {
 		accessTokenNeeded();
-	} else if(data != null && data.length > 0) {
+	} else if(data !== null && data.length > 0) {
 		var releaseName = data[0].name;
 		var htmlUrl = data[0].html_url;
 		lastReleaseItemList.append($('<a/>').attr({
 			href: htmlUrl
 		}).append(releaseName));
-		if(data[0].assets != null && data[0].assets.length > 0) {
-			for(i = 0 ; i < data[0].assets.length ; i++) {
+		if(data[0].assets !== null && data[0].assets.length > 0) {
+			for(var i = 0 ; i < data[0].assets.length ; i++) {
 				var assetName = data[0].assets[i].name;
 				var assetDlCount = data[0].assets[i].download_count;
 				var assetUrl = data[0].assets[i].browser_download_url;
