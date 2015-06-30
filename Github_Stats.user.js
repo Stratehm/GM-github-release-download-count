@@ -2,7 +2,7 @@
 // @name	Github Stats
 // @namespace	stratehm.github
 // @include	https://github.com/*/*
-// @version	1
+// @version	2
 // @grant	GM_xmlhttpRequest
 // @grant	GM_getValue
 // @grant	GM_setValue
