@@ -2,7 +2,7 @@
 // @name	Github Stats
 // @namespace	stratehm.github
 // @include	https://github.com/*/*
-// @version	2
+// @version	3
 // @grant	GM_xmlhttpRequest
 // @grant	GM_getValue
 // @grant	GM_setValue
@@ -81,24 +81,13 @@ function parseDownloadStatsReponse(response) {
 	if(status == 401) {
 		onUnauthorized();
 	} else if(data.message && data.message.indexOf("API rate limit exceeded") >-1) {
+		// Credentials are requested
 		accessTokenNeeded();
 	} else {
+		// Parsing of the response only if some data are present.
 		if(data && data.length > 0) {
-			var releaseName = data[0].name;
-			var htmlUrl = data[0].html_url;
-			lastReleaseItemList.append($('<a/>').attr({
-				href: htmlUrl
-			}).append(releaseName));
-			if(data[0].assets && data[0].assets.length > 0) {
-				for(var i = 0 ; i < data[0].assets.length ; i++) {
-					var assetName = data[0].assets[i].name;
-					var assetDlCount = data[0].assets[i].download_count;
-					var assetUrl = data[0].assets[i].browser_download_url;
-					appendAssetDlItem(assetName, assetDlCount, assetUrl);
-				}
-			} else {
-				lastReleaseItemList.append("<br>No binaries in release");
-			}
+			parseLastReleaseDownloadCount(data);
+			parseTotalDownloadCount(data);
 		} else {
 			lastReleaseItemList.append("No release<br>");
 		}
@@ -109,11 +98,42 @@ function parseDownloadStatsReponse(response) {
 	}
 }
 
+function parseLastReleaseDownloadCount(data) {
+	var releaseName = data[0].name;
+	var htmlUrl = data[0].html_url;
+	lastReleaseItemList.append($('<a/>').attr({
+		href: htmlUrl
+	}).append(releaseName));
+	if(data[0].assets && data[0].assets.length > 0) {
+		for(var i = 0 ; i < data[0].assets.length ; i++) {
+			var assetName = data[0].assets[i].name;
+			var assetDlCount = data[0].assets[i].download_count;
+			var assetUrl = data[0].assets[i].browser_download_url;
+			appendAssetDlItem(assetName, assetDlCount, assetUrl);
+		}
+	} else {
+		lastReleaseItemList.append("<br>No binaries in the last release<br>");
+	}
+}
+
+function parseTotalDownloadCount(data) {
+	var totalDownloadCount = 0;
+	for(var i = 0 ; i < data.length ; i++) {
+		if(data[i].assets && data[i].assets.length > 0) {
+			for(var j = 0 ; j < data[i].assets.length ; j++) {
+				totalDownloadCount += data[i].assets[j].download_count;
+			}
+		}
+	}
+	lastReleaseItemList.append("All releases download count: " + totalDownloadCount + "<br>");
+}
+
 function appendAssetDlItem(assetName, assetDlCount, assetUrl) {
 	lastReleaseItemList.append($('<li/>').attr({
 		style: "margin-left: 20px;"
 	}).append("<b>Name:</b> <a href='" + assetUrl + "'>" + assetName + '</a>, <b>Dl Count:</b> ' + assetDlCount));
 }
+
 
 function accessTokenNeeded() {
 	lastReleaseItemList.append($('<li/>').attr({
