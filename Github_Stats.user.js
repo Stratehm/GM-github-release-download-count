@@ -2,7 +2,7 @@
 // @name	Github Stats
 // @namespace	stratehm.github
 // @include	https://github.com/*/*
-// @version	3
+// @version	4
 // @grant	GM_xmlhttpRequest
 // @grant	GM_getValue
 // @grant	GM_setValue
@@ -21,7 +21,7 @@ function init() {
 	lastReleaseItemList = $('<ul/>').attr({
 		style: 'font-size: 11px; line-height: 10px; white-space: nowrap;'
 	}).append('<b>Last release: </b>');
-	$('h1.entry-title.public').append(lastReleaseItemList);
+	$('div.repohead-details-container').find('h1').append(lastReleaseItemList);
 	var userProject = getCurrentUserProjectUrlPart();
 	if(userProject) {
 		getDownloadCount(userProject);
