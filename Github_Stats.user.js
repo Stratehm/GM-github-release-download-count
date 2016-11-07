@@ -2,18 +2,21 @@
 // @name	Github Stats
 // @namespace	stratehm.github
 // @include	https://github.com/*/*
-// @version	4
+// @version	5
 // @grant	GM_xmlhttpRequest
 // @grant	GM_getValue
 // @grant	GM_setValue
 // @grant 	GM_deleteValue
 // @require	http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js
+// @require https://greasyfork.org/scripts/2199-waitforkeyelements/code/waitForKeyElements.js
 // ==/UserScript==
 
 var lastReleaseItemList;
+var cachedResponse;
 
 this.$ = this.jQuery = jQuery.noConflict(true);
-$(document).ready(function() { 
+
+waitForKeyElements('.repohead-details-container', function () {
 	init();
 });
 
@@ -59,22 +62,33 @@ function getCurrentUserProjectUrlPart() {
 }
 
 function getDownloadCount(userProjectUserPart) {
-	var url = "https://api.github.com/repos/" + userProjectUserPart + "/releases";
-	var headers = {
-		"Cache-Control": "no-cache"
+	if(cachedResponse) {
+		// Use the cached response if it exists.
+    parseDownloadStatsResponse(cachedResponse);
+	} else {
+    var url = "https://api.github.com/repos/" + userProjectUserPart + "/releases";
+    var headers = {
+      "Cache-Control": "no-cache"
+    }
+    if(isTokenSet()) {
+      headers.Authorization = "Basic " + btoa(GM_getValue("clientId")+":"+GM_getValue("clientSecret"));
+    }
+    GM_xmlhttpRequest({
+      method: "GET",
+      headers: headers,
+      url: url,
+      onload: onDownloadStatsResponse
+    });
 	}
-	if(isTokenSet()) {
-		headers.Authorization = "Basic " + btoa(GM_getValue("clientId")+":"+GM_getValue("clientSecret"));
-	}
-	GM_xmlhttpRequest({
-	  method: "GET",
-	  headers: headers,
-	  url: url,
-	  onload: parseDownloadStatsReponse
-	});
 }
 
-function parseDownloadStatsReponse(response) {
+function onDownloadStatsResponse(response) {
+	// Cache the response.
+	cachedResponse = response;
+	parseDownloadStatsResponse(response);
+}
+
+function parseDownloadStatsResponse(response) {
 	var status = response.status;
 	var data = $.parseJSON(response.responseText);
 	// Check if login credentials are accepted
