@@ -2,7 +2,7 @@
 // @name	Github Stats
 // @namespace	stratehm.github
 // @include	https://github.com/*/*
-// @version	5
+// @version	6
 // @grant	GM_xmlhttpRequest
 // @grant	GM_getValue
 // @grant	GM_setValue
@@ -21,7 +21,8 @@ waitForKeyElements('.repohead-details-container', function () {
 });
 
 function init() {
-	lastReleaseItemList = $('<ul/>').attr({
+	$('#ulLastReleaseItems').remove();
+	lastReleaseItemList = $('<ul id="ulLastReleaseItems"/>').attr({
 		style: 'font-size: 11px; line-height: 10px; white-space: nowrap;'
 	}).append('<b>Last release: </b>');
 	$('div.repohead-details-container').find('h1').append(lastReleaseItemList);
