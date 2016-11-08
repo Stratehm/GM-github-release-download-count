@@ -2,7 +2,7 @@
 // @name	Github Stats
 // @namespace	stratehm.github
 // @include	https://github.com/*/*
-// @version	6
+// @version	7
 // @grant	GM_xmlhttpRequest
 // @grant	GM_getValue
 // @grant	GM_setValue
@@ -115,9 +115,11 @@ function parseDownloadStatsResponse(response) {
 
 function parseLastReleaseDownloadCount(data) {
 	var releaseName = data[0].name;
+	var releaseDate = data[0].published_at;
 	var htmlUrl = data[0].html_url;
 	lastReleaseItemList.append($('<a/>').attr({
-		href: htmlUrl
+		href: htmlUrl,
+		title: formatDate(releaseDate)
 	}).append(releaseName));
 	if(data[0].assets && data[0].assets.length > 0) {
 		for(var i = 0 ; i < data[0].assets.length ; i++) {
@@ -176,4 +178,12 @@ function gotoSourceUrl() {
 	if(sourceUrl) {
 		window.location.href = sourceUrl;
 	}
+}
+
+function formatDate(dateToFormat) {
+	var dateSeconds = Date.parse(dateToFormat);
+	// build a date object with the (timezone-agnostic) timepoint
+	var date = new Date(dateSeconds);
+	// format the date according to locale's rules
+	return date.toLocaleString();
 }
